@@ -11,7 +11,7 @@ import java.util.List;
 
 //Definindo rota raiz do controller
 @RestController
-@RequestMapping("/api")
+//@RequestMapping("/api")
 @CrossOrigin(origins = "*")
 public class TesteController {
 
