@@ -18,14 +18,17 @@ public class Ticket {
     @Column(name = "status")
     private Boolean status;
 
-    //@Column(name = "qtd_ticket")
-    //private Long qtdTicket;
+//    @Column(name = "qtd_ticket")
+//    private Long qtdTicket;
+
+    @Column(name = "valor")
+    private double value;
 
     @Column(name = "qr_code_token", unique = true)
     private String qrCodeToken;
 
-    @Column(name = "qr_code_expiration")
-    private LocalDateTime qrCodeExpiration;
+//    @Column(name = "qr_code_expiration")
+//    private LocalDateTime qrCodeExpiration;
 
     @CreationTimestamp
     private Instant horaEmissao;
@@ -36,9 +39,10 @@ public class Ticket {
 
     }
 
-    public Ticket(Long idTicket, Boolean status, Instant horaEmissao, Instant baixaTicket) {
-        this.idTicket = idTicket;
+    public Ticket(Boolean status, double value, String qrCodeToken, Instant horaEmissao, Instant baixaTicket) {
         this.status = status;
+        this.value = value;
+        this.qrCodeToken = qrCodeToken;
         this.horaEmissao = horaEmissao;
         this.baixaTicket = baixaTicket;
     }
@@ -67,6 +71,15 @@ public class Ticket {
         this.qtdTicket = qtdTicket;
     }
 */
+
+    public double getValue() {
+        return value;
+    }
+
+    public void setValue(double value) {
+        this.value = value;
+    }
+
     public Instant getHoraEmissao() {
         return horaEmissao;
     }
@@ -83,13 +96,13 @@ public class Ticket {
         this.baixaTicket = baixaTicket;
     }
 
-    public LocalDateTime getQrCodeExpiration() {
-        return qrCodeExpiration;
-    }
-
-    public void setQrCodeExpiration(LocalDateTime qrCodeExpiration) {
-        this.qrCodeExpiration = qrCodeExpiration;
-    }
+//    public LocalDateTime getQrCodeExpiration() {
+//        return qrCodeExpiration;
+//    }
+//
+//    public void setQrCodeExpiration(LocalDateTime qrCodeExpiration) {
+//        this.qrCodeExpiration = qrCodeExpiration;
+//    }
 
     public String getQrCodeToken() {
         return qrCodeToken;
