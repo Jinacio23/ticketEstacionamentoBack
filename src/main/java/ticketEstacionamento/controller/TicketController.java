@@ -48,5 +48,6 @@ public class TicketController {
             return ResponseEntity.badRequest().body(new ValidationResponse(false, e.getMessage(), null));
         }
     }
+
 }
 
