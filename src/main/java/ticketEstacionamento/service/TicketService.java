@@ -48,6 +48,7 @@ public class TicketService {
         try{
             //Criando novo ticket e salvando no banco
             Ticket newTicket = new Ticket(
+                    null,
                     true,
                     ticketValue,
                     token,
@@ -61,8 +62,8 @@ public class TicketService {
 
             // Criando DTO de retorno para o front
             TicketDTO clientTicket = new TicketDTO(
-                    newTicket.getStatus(),
-                    newTicket.getValue(),
+                    newTicket.getPago(),
+                    newTicket.getValor(),
                     qrCode);
             return clientTicket;
 
@@ -74,22 +75,22 @@ public class TicketService {
     }
 
     //Validação e baixa do ticket
-    public void baixaTicket(String id){
-        Long idTicket = Long.parseLong(id);
-
-        Optional<Ticket> ticketEntity = ticketRepository.findById(idTicket);
-
-        if(ticketEntity.isPresent()){
-            Ticket ticket = ticketEntity.get();
-
-            ticket.setStatus(false);
-            ticket.setBaixaTicket(Instant.now());
-
-            ticketRepository.save(ticket);
-        } else {
-            throw new RuntimeException("Ticket não encontrado!");
-        }
-    }
+//    public void baixaTicket(String id){
+//        Long idTicket = Long.parseLong(id);
+//
+//        Optional<Ticket> ticketEntity = ticketRepository.findById(idTicket);
+//
+//        if(ticketEntity.isPresent()){
+//            Ticket ticket = ticketEntity.get();
+//
+//            ticket.setStatus(false);
+//            ticket.setBaixaTicket(Instant.now());
+//
+//            ticketRepository.save(ticket);
+//        } else {
+//            throw new RuntimeException("Ticket não encontrado!");
+//        }
+//    }
 
     //Validação do qrcode
     public Ticket validateQrCode(Long ticketId, String token) {
@@ -109,8 +110,8 @@ public class TicketService {
 //        }
 
         //Atualizando status e hora da baixa
-        ticket.setStatus(false);
-        ticket.setBaixaTicket(Instant.now());
+        ticket.setPago(false);
+        ticket.setHr_saida(Instant.now());
         ticketRepository.save(ticket);
 
         return ticket;

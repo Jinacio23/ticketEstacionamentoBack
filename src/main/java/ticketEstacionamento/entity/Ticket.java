@@ -15,14 +15,14 @@ public class Ticket {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idTicket;
 
-    @Column(name = "status")
-    private Boolean status;
+    @Column(name = "pago")
+    private Boolean pago = false;
 
 //    @Column(name = "qtd_ticket")
 //    private Long qtdTicket;
 
     @Column(name = "valor")
-    private double value;
+    private double valor;
 
     @Column(name = "qr_code_token", unique = true)
     private String qrCodeToken;
@@ -30,21 +30,27 @@ public class Ticket {
 //    @Column(name = "qr_code_expiration")
 //    private LocalDateTime qrCodeExpiration;
 
-    @CreationTimestamp
-    private Instant horaEmissao;
-    @UpdateTimestamp
-    private Instant baixaTicket;
+    private Instant hr_entrada;
+    private Instant hr_saida;
+
+    @ManyToOne
+    @JoinColumn(name = "estacionamento_id")
+    private Estacionamento estacionamento;
+
+    @OneToOne(mappedBy = "ticket", cascade = CascadeType.ALL)
+    private Pagamento pagamento;
 
     public Ticket(){
 
     }
 
-    public Ticket(Boolean status, double value, String qrCodeToken, Instant horaEmissao, Instant baixaTicket) {
-        this.status = status;
-        this.value = value;
+    public Ticket(Long idTicket, Boolean pago, double valor, String qrCodeToken, Instant hr_entrada, Instant hr_saida) {
+        this.idTicket = idTicket;
+        this.pago = pago;
+        this.valor = valor;
         this.qrCodeToken = qrCodeToken;
-        this.horaEmissao = horaEmissao;
-        this.baixaTicket = baixaTicket;
+        this.hr_entrada = hr_entrada;
+        this.hr_saida = hr_saida;
     }
 
     public Long getIdTicket() {
@@ -55,54 +61,21 @@ public class Ticket {
         this.idTicket = idTicket;
     }
 
-    public Boolean getStatus() {
-        return status;
+    public Boolean getPago() {
+        return pago;
     }
 
-    public void setStatus(Boolean status) {
-        this.status = status;
-    }
-/*
-    public Long getQtdTicket() {
-        return qtdTicket;
+    public void setPago(Boolean pago) {
+        this.pago = pago;
     }
 
-    public void setQtdTicket(Long qtdTicket) {
-        this.qtdTicket = qtdTicket;
-    }
-*/
-
-    public double getValue() {
-        return value;
+    public double getValor() {
+        return valor;
     }
 
-    public void setValue(double value) {
-        this.value = value;
+    public void setValor(double valor) {
+        this.valor = valor;
     }
-
-    public Instant getHoraEmissao() {
-        return horaEmissao;
-    }
-
-    public void setHoraEmissao(Instant horaEmissao) {
-        this.horaEmissao = horaEmissao;
-    }
-
-    public Instant getBaixaTicket() {
-        return baixaTicket;
-    }
-
-    public void setBaixaTicket(Instant baixaTicket) {
-        this.baixaTicket = baixaTicket;
-    }
-
-//    public LocalDateTime getQrCodeExpiration() {
-//        return qrCodeExpiration;
-//    }
-//
-//    public void setQrCodeExpiration(LocalDateTime qrCodeExpiration) {
-//        this.qrCodeExpiration = qrCodeExpiration;
-//    }
 
     public String getQrCodeToken() {
         return qrCodeToken;
@@ -110,6 +83,22 @@ public class Ticket {
 
     public void setQrCodeToken(String qrCodeToken) {
         this.qrCodeToken = qrCodeToken;
+    }
+
+    public Instant getHr_entrada() {
+        return hr_entrada;
+    }
+
+    public void setHr_entrada(Instant hr_entrada) {
+        this.hr_entrada = hr_entrada;
+    }
+
+    public Instant getHr_saida() {
+        return hr_saida;
+    }
+
+    public void setHr_saida(Instant hr_saida) {
+        this.hr_saida = hr_saida;
     }
 }
 
