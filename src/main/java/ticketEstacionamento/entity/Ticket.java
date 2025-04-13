@@ -16,7 +16,7 @@ public class Ticket {
     private Long idTicket;
 
     @Column(name = "pago")
-    private Boolean pago = false;
+    private Boolean pago;
 
 //    @Column(name = "qtd_ticket")
 //    private Long qtdTicket;
@@ -30,8 +30,8 @@ public class Ticket {
 //    @Column(name = "qr_code_expiration")
 //    private LocalDateTime qrCodeExpiration;
 
-    private Instant hr_entrada;
-    private Instant hr_saida;
+    private LocalDateTime hrEntrada;
+    private LocalDateTime hrSaida;
 
     @ManyToOne
     @JoinColumn(name = "estacionamento_id")
@@ -44,13 +44,13 @@ public class Ticket {
 
     }
 
-    public Ticket(Long idTicket, Boolean pago, double valor, String qrCodeToken, Instant hr_entrada, Instant hr_saida) {
+    public Ticket(Long idTicket, Boolean pago, double valor, String qrCodeToken, LocalDateTime hrEntrada, LocalDateTime hrSaida) {
         this.idTicket = idTicket;
         this.pago = pago;
         this.valor = valor;
         this.qrCodeToken = qrCodeToken;
-        this.hr_entrada = hr_entrada;
-        this.hr_saida = hr_saida;
+        this.hrEntrada = hrEntrada;
+        this.hrSaida = hrSaida;
     }
 
     public Long getIdTicket() {
@@ -85,20 +85,36 @@ public class Ticket {
         this.qrCodeToken = qrCodeToken;
     }
 
-    public Instant getHr_entrada() {
-        return hr_entrada;
+    public LocalDateTime getHrEntrada() {
+        return hrEntrada;
     }
 
-    public void setHr_entrada(Instant hr_entrada) {
-        this.hr_entrada = hr_entrada;
+    public void setHrEntrada(LocalDateTime hrEntrada) {
+        this.hrEntrada = hrEntrada;
     }
 
-    public Instant getHr_saida() {
-        return hr_saida;
+    public LocalDateTime getHrSaida() {
+        return hrSaida;
     }
 
-    public void setHr_saida(Instant hr_saida) {
-        this.hr_saida = hr_saida;
+    public void setHrSaida(LocalDateTime hrSaida) {
+        this.hrSaida = hrSaida;
+    }
+
+    public Estacionamento getEstacionamento() {
+        return estacionamento;
+    }
+
+    public void setEstacionamento(Estacionamento estacionamento) {
+        this.estacionamento = estacionamento;
+    }
+
+    public Pagamento getPagamento() {
+        return pagamento;
+    }
+
+    public void setPagamento(Pagamento pagamento) {
+        this.pagamento = pagamento;
     }
 }
 

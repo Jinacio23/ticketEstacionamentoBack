@@ -1,6 +1,7 @@
 package ticketEstacionamento.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ticketEstacionamento.dto.QrValidationRequest;
@@ -25,24 +26,31 @@ public class TicketController {
     @GetMapping
     public ResponseEntity<List<Ticket>> getTickets() {
         //Recuperar todos os tickets
-        var tickets = ticketService.listarTickets();
+        List<Ticket> tickets = ticketService.listarTickets();
 
         return ResponseEntity.ok(tickets);
     }
 
-    //Gera um novo ticket e retorna o DTO
-    @PostMapping("/generate")
-    public ResponseEntity<TicketDTO> generateTicket(){
-        TicketDTO ticket = ticketService.generateTicket();
+    @GetMapping("/{estacionamentoId}/ativos")
+    public ResponseEntity<List<Ticket>> activedTickets(@PathVariable("estacionamentoId") String id){
+        List<Ticket> activeTickets = ticketService.activeTickets(id);
 
-        return ResponseEntity.ok(ticket);
+        return ResponseEntity.ok(activeTickets);
+    }
+
+    //Gera um novo ticket e retorna o DTO
+    @PostMapping("/{estacionamentoId}/generate")
+    public ResponseEntity<TicketDTO> generateTicket(@PathVariable("estacionamentoId") String id){
+        TicketDTO ticket = ticketService.generateTicket(id);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(ticket);
     }
 
     //Atualização de token e validação de QrCode
-    @PostMapping("/validate")
-    public ResponseEntity<?> validateTicket(@RequestBody QrValidationRequest request) {
+    @PutMapping("/{ticketToken}/validate")
+    public ResponseEntity<?> validateTicket(@PathVariable("ticketToken") String token) {
         try {
-            Ticket ticket = ticketService.validateQrCode(request.getTicketId(), request.getToken());
+            Ticket ticket = ticketService.validateQrCode(token);
             return ResponseEntity.ok(new ValidationResponse(true, "Ticket válido", ticket));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(new ValidationResponse(false, e.getMessage(), null));

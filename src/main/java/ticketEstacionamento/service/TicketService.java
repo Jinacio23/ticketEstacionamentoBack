@@ -3,10 +3,13 @@ package ticketEstacionamento.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ticketEstacionamento.dto.TicketDTO;
+import ticketEstacionamento.entity.Estacionamento;
 import ticketEstacionamento.entity.Ticket;
+import ticketEstacionamento.repository.EstacionamentoRepository;
 import ticketEstacionamento.repository.TicketRepository;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -16,6 +19,9 @@ public class TicketService {
 
     @Autowired
     private TicketRepository ticketRepository;
+
+    @Autowired
+    private EstacionamentoRepository estacionamentoRepository;
 
     @Autowired
     private QrCodeService qrCodeService;
@@ -36,8 +42,18 @@ public class TicketService {
         return ticketRepository.findAll();
     }
 
+    //Listagem dos veículos no estacionamento - tickets ativos
+    public List<Ticket> activeTickets(String id) {
+        Long estacionamentoId = Long.parseLong(id);
+        return ticketRepository.findByEstacionamentoIdAndHrSaidaIsNull(estacionamentoId);
+    }
+
     //Gera novo ticket para o usuário
-    public TicketDTO generateTicket() {
+    public TicketDTO generateTicket(String id) {
+
+        Long estacionamentoId = Long.parseLong(id);
+        Estacionamento estacionamento = estacionamentoRepository.findById(estacionamentoId)
+                .orElseThrow(() -> new RuntimeException("Estacionamento não encontrado"));
 
         //Gerando token para o ticket
         String token = UUID.randomUUID().toString();
@@ -47,13 +63,14 @@ public class TicketService {
 
         try{
             //Criando novo ticket e salvando no banco
-            Ticket newTicket = new Ticket(
-                    null,
-                    true,
-                    ticketValue,
-                    token,
-                    Instant.now(),
-                    null);
+            Ticket newTicket = new Ticket();
+
+            newTicket.setQrCodeToken(token);
+            newTicket.setHrEntrada(LocalDateTime.now());
+            newTicket.setValor(ticketValue);
+            newTicket.setEstacionamento(estacionamento);
+            newTicket.setPago(false);
+
             ticketRepository.save(newTicket);
 
             // Cria o conteúdo do QR Code
@@ -61,11 +78,13 @@ public class TicketService {
             String qrCode = qrCodeService.generateQRCodeBase64(qrContent, 200,200);
 
             // Criando DTO de retorno para o front
-            TicketDTO clientTicket = new TicketDTO(
-                    newTicket.getPago(),
-                    newTicket.getValor(),
-                    qrCode);
-            return clientTicket;
+            return new TicketDTO(
+                    newTicket.getQrCodeToken(),
+                    newTicket.getHrEntrada(),
+                    qrCode,
+                    newTicket.getEstacionamento()
+            );
+
 
         } catch (Exception e) {
             System.err.println("Erro ao gerar ticket: " + e.getMessage());
@@ -93,12 +112,18 @@ public class TicketService {
 //    }
 
     //Validação do qrcode
-    public Ticket validateQrCode(Long ticketId, String token) {
-        Ticket ticket = ticketRepository.findById(ticketId)
-                .orElseThrow(() -> new RuntimeException("Id do ticket não encontrado!"));
+    public Ticket validateQrCode(String token) {
 
-        if (!token.equals(ticket.getQrCodeToken())) {
-            throw new RuntimeException("Token inválido!");
+        Optional<Ticket> ticketRegister = ticketRepository.findByQrCodeToken(token);
+
+        if(!ticketRegister.isPresent()){
+            throw new RuntimeException("Id do ticket não encontrado!");
+        }
+
+        Ticket ticket = ticketRegister.get();
+
+        if(ticket.getHrSaida() != null){
+            throw new RuntimeException("Saída já registrada para esse ticket.");
         }
 
 //        if (LocalDateTime.now().isAfter(ticket.getQrCodeExpiration())) {
@@ -111,9 +136,11 @@ public class TicketService {
 
         //Atualizando status e hora da baixa
         ticket.setPago(false);
-        ticket.setHr_saida(Instant.now());
+        ticket.setHrSaida(LocalDateTime.now());
         ticketRepository.save(ticket);
 
         return ticket;
     }
+
+
 }

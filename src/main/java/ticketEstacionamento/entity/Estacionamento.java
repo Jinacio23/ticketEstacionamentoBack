@@ -11,7 +11,7 @@ public class Estacionamento {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long estacionamento_id;
+    private Long id;
 
     @Column(name = "nome")
     private String nome;
@@ -34,20 +34,20 @@ public class Estacionamento {
     public Estacionamento() {
     }
 
-    public Estacionamento(Long estacionamento_id, String nome, String endereco, Integer qtd_vagas, Boolean status) {
-        this.estacionamento_id = estacionamento_id;
+    public Estacionamento(Long id, String nome, String endereco, Integer qtd_vagas, Boolean status) {
+        this.id = id;
         this.nome = nome;
         this.endereco = endereco;
         this.qtd_vagas = qtd_vagas;
         this.status = status;
     }
 
-    public Long getEstacionamento_id() {
-        return estacionamento_id;
+    public Long getId() {
+        return id;
     }
 
-    public void setEstacionamento_id(Long estacionamento_id) {
-        this.estacionamento_id = estacionamento_id;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getNome() {
