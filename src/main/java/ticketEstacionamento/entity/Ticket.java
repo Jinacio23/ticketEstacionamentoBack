@@ -1,5 +1,6 @@
 package ticketEstacionamento.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -38,6 +39,7 @@ public class Ticket {
     private Estacionamento estacionamento;
 
     @OneToOne(mappedBy = "ticket", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private Pagamento pagamento;
 
     public Ticket(){

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import ticketEstacionamento.dto.QrValidationRequest;
 import ticketEstacionamento.dto.TicketDTO;
 import ticketEstacionamento.dto.ValidationResponse;
+import ticketEstacionamento.entity.Pagamento;
 import ticketEstacionamento.entity.Ticket;
 import ticketEstacionamento.service.TicketService;
 
@@ -55,6 +56,16 @@ public class TicketController {
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(new ValidationResponse(false, e.getMessage(), null));
         }
+    }
+
+    //Pagamento do ticket
+    @PostMapping("/{ticketToken}/pagamento")
+    public ResponseEntity<Pagamento> pagarTicket(
+            @PathVariable String ticketToken,
+            @RequestParam String formaPagamento) {
+
+        Pagamento pagamento = ticketService.pagarTicket(ticketToken, formaPagamento);
+        return ResponseEntity.status(HttpStatus.CREATED).body(pagamento);
     }
 
 }

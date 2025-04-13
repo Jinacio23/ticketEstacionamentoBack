@@ -4,10 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ticketEstacionamento.dto.TicketDTO;
 import ticketEstacionamento.entity.Estacionamento;
+import ticketEstacionamento.entity.Pagamento;
 import ticketEstacionamento.entity.Ticket;
 import ticketEstacionamento.repository.EstacionamentoRepository;
+import ticketEstacionamento.repository.PagamentoRepository;
 import ticketEstacionamento.repository.TicketRepository;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,6 +25,9 @@ public class TicketService {
 
     @Autowired
     private EstacionamentoRepository estacionamentoRepository;
+
+    @Autowired
+    private PagamentoRepository pagamentoRepository;
 
     @Autowired
     private QrCodeService qrCodeService;
@@ -114,13 +120,8 @@ public class TicketService {
     //Validação do qrcode
     public Ticket validateQrCode(String token) {
 
-        Optional<Ticket> ticketRegister = ticketRepository.findByQrCodeToken(token);
-
-        if(!ticketRegister.isPresent()){
-            throw new RuntimeException("Id do ticket não encontrado!");
-        }
-
-        Ticket ticket = ticketRegister.get();
+        Ticket ticket = ticketRepository.findByQrCodeToken(token)
+                .orElseThrow(() -> new RuntimeException("Id do ticket não encontrado!"));
 
         if(ticket.getHrSaida() != null){
             throw new RuntimeException("Saída já registrada para esse ticket.");
@@ -142,5 +143,31 @@ public class TicketService {
         return ticket;
     }
 
+    public Pagamento pagarTicket(String ticketToken,String formaPagamento){
+        Ticket ticket = ticketRepository.findByQrCodeToken(ticketToken)
+                .orElseThrow(() -> new RuntimeException("Id do ticket não encontrado!"));
+
+        if (ticket.getHrSaida() == null){
+            throw new RuntimeException("Saída ainda não registrada");
+        }
+
+        if (ticket.getPago()){
+            throw new RuntimeException("O ticket já foi pago");
+        }
+
+        Pagamento pagamento = new Pagamento();
+        pagamento.setDt_pagamento(LocalDateTime.now());
+        pagamento.setTipoPagamento(formaPagamento);
+        pagamento.setValorPagamento(ticket.getValor());
+        pagamento.setTicket(ticket);
+
+        pagamentoRepository.save(pagamento);
+
+        ticket.setPago(true);
+
+        ticketRepository.save(ticket);
+
+        return pagamento;
+    }
 
 }

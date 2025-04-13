@@ -1,9 +1,10 @@
 package ticketEstacionamento.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Entity
 @Table(name = "tb_pagamento")
@@ -14,7 +15,7 @@ public class Pagamento {
     private Long idPagamento;
 
     @Column(name = "valor_pagamento")
-    private BigDecimal valorPagamento;
+    private double valorPagamento;
 
     @Column(name = "dt_pagamento")
     private LocalDateTime dt_pagamento;
@@ -22,23 +23,24 @@ public class Pagamento {
     @Column(name = "tipo_pagamento")
     private String tipoPagamento; //pix, dinheiro, cartao
 
-    @Column(name = "status")
-    private String status; //pago, pendente, cancelado
+//    @Column(name = "status")
+//    private String status; //pago, pendente, cancelado
 
     @OneToOne
     @JoinColumn(name = "ticket_id")
+    @JsonBackReference
     private Ticket ticket;
 
     public Pagamento() {
 
     }
 
-    public Pagamento(Long idPagamento, BigDecimal valorPagamento, LocalDateTime dt_pagamento, String tipoPagamento, String status) {
+    public Pagamento(Long idPagamento, double valorPagamento, LocalDateTime dt_pagamento, String tipoPagamento) {
         this.idPagamento = idPagamento;
         this.valorPagamento = valorPagamento;
         this.dt_pagamento = dt_pagamento;
         this.tipoPagamento = tipoPagamento;
-        this.status = status;
+//        this.status = status;
     }
 
     public Long getIdPagamento() {
@@ -49,11 +51,11 @@ public class Pagamento {
         this.idPagamento = idPagamento;
     }
 
-    public BigDecimal getValorPagamento() {
+    public double getValorPagamento() {
         return valorPagamento;
     }
 
-    public void setValorPagamento(BigDecimal valorPagamento) {
+    public void setValorPagamento(double valorPagamento) {
         this.valorPagamento = valorPagamento;
     }
 
@@ -73,11 +75,19 @@ public class Pagamento {
         this.tipoPagamento = tipoPagamento;
     }
 
-    public String getStatus() {
-        return status;
+    public Ticket getTicket() {
+        return ticket;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setTicket(Ticket ticket) {
+        this.ticket = ticket;
     }
+
+    //    public String getStatus() {
+//        return status;
+//    }
+//
+//    public void setStatus(String status) {
+//        this.status = status;
+//    }
 }
