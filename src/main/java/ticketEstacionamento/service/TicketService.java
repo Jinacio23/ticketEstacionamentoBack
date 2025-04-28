@@ -11,6 +11,8 @@ import ticketEstacionamento.repository.PagamentoRepository;
 import ticketEstacionamento.repository.TicketRepository;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -48,6 +50,12 @@ public class TicketService {
         return ticketRepository.findAll();
     }
 
+    //Listagem dos veículos no estacionamento
+    public List<Ticket> findByEstacionamentoId(String id){
+        Long estacionamentoId = Long.parseLong(id);
+        return ticketRepository.findByEstacionamentoId(estacionamentoId);
+    }
+
     //Listagem dos veículos no estacionamento - tickets ativos
     public List<Ticket> activeTickets(String id) {
         Long estacionamentoId = Long.parseLong(id);
@@ -65,7 +73,7 @@ public class TicketService {
         String token = UUID.randomUUID().toString();
 
         //Definindo valor padrão
-        double ticketValue = 10.0;
+        double ticketValue = 0.0;
 
         try{
             //Criando novo ticket e salvando no banco
@@ -73,6 +81,7 @@ public class TicketService {
 
             newTicket.setQrCodeToken(token);
             newTicket.setHrEntrada(LocalDateTime.now());
+            newTicket.setQrCodeExpiration(LocalDateTime.now().plusMinutes(15));
             newTicket.setValor(ticketValue);
             newTicket.setEstacionamento(estacionamento);
             newTicket.setPago(false);
@@ -119,7 +128,6 @@ public class TicketService {
 
     //Validação do qrcode
     public Ticket validateQrCode(String token) {
-
         Ticket ticket = ticketRepository.findByQrCodeToken(token)
                 .orElseThrow(() -> new RuntimeException("Id do ticket não encontrado!"));
 
@@ -127,16 +135,35 @@ public class TicketService {
             throw new RuntimeException("Saída já registrada para esse ticket.");
         }
 
-//        if (LocalDateTime.now().isAfter(ticket.getQrCodeExpiration())) {
-//            throw new RuntimeException("QR Code expirado");
-//        }
+        //Calcula o valor a ser pago pelo tempo de uso do estacionamento
+
+        if (LocalDateTime.now().isAfter(ticket.getQrCodeExpiration())) {
+            double taxaHoraria = ticket.getEstacionamento().getTaxa_horaria();
+            LocalDateTime saida = LocalDateTime.now();
+            Duration timeExpired = Duration.between(ticket.getQrCodeExpiration(), saida);
+
+            double time = (double) timeExpired.toMinutes() / 60;
+            double paymentValue = taxaHoraria * time;
+
+            System.out.println("paymentValue: "+ paymentValue);
+
+            //Arredonda pra 2 casas decimais
+            BigDecimal roundedValue = new BigDecimal(paymentValue)
+                    .setScale(2, RoundingMode.HALF_UP);
+
+            System.out.println("RoundedValue: "+ roundedValue);
+            System.out.println("RoundedValue: "+ roundedValue.doubleValue());
+
+            ticket.setValor(roundedValue.doubleValue());
+        } else {
+            ticket.setValor(0);
+        }
 
 //        if (!"ABERTO".equals(ticket.getStatus())) {
 //            throw new RuntimeException("Ticket não está aberto para validação");
 //        }
 
         //Atualizando status e hora da baixa
-        ticket.setPago(false);
         ticket.setHrSaida(LocalDateTime.now());
         ticketRepository.save(ticket);
 
@@ -169,5 +196,4 @@ public class TicketService {
 
         return pagamento;
     }
-
 }

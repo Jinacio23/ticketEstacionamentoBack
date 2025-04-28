@@ -9,6 +9,9 @@ import java.util.Optional;
 
 @Repository
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
+
+    List<Ticket> findByEstacionamentoId(Long estacionamentoId);
+
     List<Ticket> findByEstacionamentoIdAndHrSaidaIsNull(Long estacionamentoId);
 
     Optional<Ticket> findByQrCodeToken(String token);
