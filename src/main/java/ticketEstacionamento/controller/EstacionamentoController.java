@@ -53,6 +53,14 @@ public class EstacionamentoController {
         return ResponseEntity.noContent().build();
     }
 
+    //Exclusão lógica de estacionamento
+    @PutMapping("/toggle/{id}")
+    public ResponseEntity<Void> alternarStatusEstacionamento(@PathVariable("id") String id){
+        estacionamentoService.alternarStatusPorId(id);
+
+        return ResponseEntity.noContent().build();
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletandoEstacionamento(@PathVariable("id") String id){
         estacionamentoService.deletandoPeloId(id);

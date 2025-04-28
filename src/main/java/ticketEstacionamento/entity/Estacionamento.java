@@ -22,8 +22,8 @@ public class Estacionamento {
     @Column(name = "qtd_vagas")
     private Integer qtd_vagas;
 
-//    @Column(name = "taxa_horaria")
-//    private LocalTime taxa_horaria;
+    @Column(name = "taxa_horaria")
+    private Double taxa_horaria;
 
     @Column(name = "status")
     private Boolean status;
@@ -34,11 +34,12 @@ public class Estacionamento {
     public Estacionamento() {
     }
 
-    public Estacionamento(Long id, String nome, String endereco, Integer qtd_vagas, Boolean status) {
+    public Estacionamento(Long id, String nome, String endereco, Integer qtd_vagas, Double taxa_horaria, Boolean status) {
         this.id = id;
         this.nome = nome;
         this.endereco = endereco;
         this.qtd_vagas = qtd_vagas;
+        this.taxa_horaria = taxa_horaria;
         this.status = status;
     }
 
@@ -74,6 +75,14 @@ public class Estacionamento {
         this.qtd_vagas = qtd_vagas;
     }
 
+    public Double getTaxa_horaria() {
+        return taxa_horaria;
+    }
+
+    public void setTaxa_horaria(Double taxa_horaria) {
+        this.taxa_horaria = taxa_horaria;
+    }
+
     public Boolean getStatus() {
         return status;
     }
@@ -81,4 +90,6 @@ public class Estacionamento {
     public void setStatus(Boolean status) {
         this.status = status;
     }
+
+
 }

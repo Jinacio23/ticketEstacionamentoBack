@@ -30,6 +30,7 @@ public class EstacionamentoService {
                 estacionamentoDTO.getNome(),
                 estacionamentoDTO.getEndereco(),
                 estacionamentoDTO.getQtd_vagas(),
+                estacionamentoDTO.getTaxa_horaria(),
                 estacionamentoDTO.getStatus()
         );
 
@@ -52,12 +53,24 @@ public class EstacionamentoService {
             if(estacionamentoDTO.getQtd_vagas() != null){
                 estacionamento.setQtd_vagas(estacionamentoDTO.getQtd_vagas());
             }
+            if(estacionamentoDTO.getTaxa_horaria() != null){
+                estacionamento.setTaxa_horaria(estacionamentoDTO.getTaxa_horaria());
+            }
             if(estacionamentoDTO.getStatus() != null){
                 estacionamento.setStatus(estacionamentoDTO.getStatus());
             }
 
             estacionamentoRepository.save(estacionamento);
         }
+    }
+
+    public void alternarStatusPorId(String id) {
+        Long estacionamentoId = Long.parseLong(id);
+        Estacionamento estacionamento = estacionamentoRepository.findById(estacionamentoId)
+                .orElseThrow(() -> new RuntimeException("Estacionamento não encontrado"));
+
+        estacionamento.setStatus(!estacionamento.getStatus());
+        estacionamentoRepository.save(estacionamento);
     }
 
     public void deletandoPeloId(String id) {
@@ -69,5 +82,4 @@ public class EstacionamentoService {
         estacionamentoRepository.deleteById(Long.parseLong(id));
         }
     }
-
 }

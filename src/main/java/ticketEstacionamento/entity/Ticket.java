@@ -19,17 +19,14 @@ public class Ticket {
     @Column(name = "pago")
     private Boolean pago;
 
-//    @Column(name = "qtd_ticket")
-//    private Long qtdTicket;
-
     @Column(name = "valor")
     private double valor;
 
     @Column(name = "qr_code_token", unique = true)
     private String qrCodeToken;
 
-//    @Column(name = "qr_code_expiration")
-//    private LocalDateTime qrCodeExpiration;
+    @Column(name = "qr_code_expiration")
+    private LocalDateTime qrCodeExpiration;
 
     private LocalDateTime hrEntrada;
     private LocalDateTime hrSaida;
@@ -43,14 +40,14 @@ public class Ticket {
     private Pagamento pagamento;
 
     public Ticket(){
-
     }
 
-    public Ticket(Long idTicket, Boolean pago, double valor, String qrCodeToken, LocalDateTime hrEntrada, LocalDateTime hrSaida) {
+    public Ticket(Long idTicket, Boolean pago, double valor, String qrCodeToken, LocalDateTime qrCodeExpiration, LocalDateTime hrEntrada, LocalDateTime hrSaida) {
         this.idTicket = idTicket;
         this.pago = pago;
         this.valor = valor;
         this.qrCodeToken = qrCodeToken;
+        this.qrCodeExpiration = qrCodeExpiration;
         this.hrEntrada = hrEntrada;
         this.hrSaida = hrSaida;
     }
@@ -85,6 +82,14 @@ public class Ticket {
 
     public void setQrCodeToken(String qrCodeToken) {
         this.qrCodeToken = qrCodeToken;
+    }
+
+    public LocalDateTime getQrCodeExpiration() {
+        return qrCodeExpiration;
+    }
+
+    public void setQrCodeExpiration(LocalDateTime qrCodeExpiration) {
+        this.qrCodeExpiration = qrCodeExpiration;
     }
 
     public LocalDateTime getHrEntrada() {

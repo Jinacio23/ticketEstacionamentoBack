@@ -4,6 +4,7 @@ public class EstacionamentoDTO {
     private String nome;
     private String endereco;
     private Integer qtd_vagas;
+    private Double taxa_horaria;
     private Boolean status;
 
     public String getNome() {
@@ -28,6 +29,14 @@ public class EstacionamentoDTO {
 
     public void setQtd_vagas(Integer qtd_vagas) {
         this.qtd_vagas = qtd_vagas;
+    }
+
+    public Double getTaxa_horaria() {
+        return taxa_horaria;
+    }
+
+    public void setTaxa_horaria(Double taxa_horaria) {
+        this.taxa_horaria = taxa_horaria;
     }
 
     public Boolean getStatus() {

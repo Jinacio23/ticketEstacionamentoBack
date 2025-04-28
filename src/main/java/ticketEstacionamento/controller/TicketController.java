@@ -32,6 +32,15 @@ public class TicketController {
         return ResponseEntity.ok(tickets);
     }
 
+    //Listagem de tickets por estacionamento
+    @GetMapping("/{estacionamentoId}")
+    public ResponseEntity<List<Ticket>> findByEstacionamento(@PathVariable("estacionamentoId") String id){
+        List<Ticket> tickets = ticketService.findByEstacionamentoId(id);
+
+        return ResponseEntity.ok(tickets);
+    }
+
+    //Listagem de tickets ativos
     @GetMapping("/{estacionamentoId}/ativos")
     public ResponseEntity<List<Ticket>> activedTickets(@PathVariable("estacionamentoId") String id){
         List<Ticket> activeTickets = ticketService.activeTickets(id);
@@ -47,7 +56,7 @@ public class TicketController {
         return ResponseEntity.status(HttpStatus.CREATED).body(ticket);
     }
 
-    //Atualização de token e validação de QrCode
+    //Validação do ticket
     @PutMapping("/{ticketToken}/validate")
     public ResponseEntity<?> validateTicket(@PathVariable("ticketToken") String token) {
         try {
