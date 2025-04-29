@@ -1,6 +1,7 @@
 package ticketEstacionamento.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ticketEstacionamento.dto.EstacionamentoDTO;
@@ -18,6 +19,7 @@ public class EstacionamentoController {
     @Autowired
     private EstacionamentoService estacionamentoService;
 
+    //Listagem dos estacionamentos
     @GetMapping
     public ResponseEntity<List<Estacionamento>> listagemDeEstacionamentos(){
         List<Estacionamento> estacionamentos = estacionamentoService.listandoFiliais();
@@ -25,7 +27,7 @@ public class EstacionamentoController {
         return ResponseEntity.ok(estacionamentos);
     }
 
-    //Conseguindo um estacionamento pelo id
+    //Pesquisando um estacionamento pelo id
     @GetMapping("/{id}")
     public ResponseEntity<Estacionamento> conseguindoEstacionamento(@PathVariable("id") String id) {
 
@@ -38,18 +40,21 @@ public class EstacionamentoController {
         }
     }
 
+    //Cadastro do estacionamento
     @PostMapping
     public ResponseEntity<Void> cadastroEstacionamento(@RequestBody EstacionamentoDTO estacionamentoDTO){
 
         Estacionamento estacionamento = estacionamentoService.criarEstacionamento(estacionamentoDTO);
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    //Atualizar estacionamento
     @PutMapping("/{id}")
     public ResponseEntity<Void> atualizandoEstacionamento(@PathVariable("id") String id, @RequestBody EstacionamentoDTO estacionamentoDTO){
-        // Enviar somente os dados que vão ser alterados
+        //Enviar somente os dados que vão ser alterados
         estacionamentoService.atualizandoEstacionamento(id, estacionamentoDTO);
+
         return ResponseEntity.noContent().build();
     }
 
@@ -61,11 +66,12 @@ public class EstacionamentoController {
         return ResponseEntity.noContent().build();
     }
 
+    //Deletando estacionamento
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletandoEstacionamento(@PathVariable("id") String id){
         estacionamentoService.deletandoPeloId(id);
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 
 }
