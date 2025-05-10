@@ -48,7 +48,7 @@ public class TicketController {
         return ResponseEntity.ok(activeTickets);
     }
 
-    //Gera um novo ticket e retorna o DTO
+    //Gerar um novo ticket e retorna o DTO
     @PostMapping("/{estacionamentoId}/generate")
     public ResponseEntity<TicketDTO> generateTicket(@PathVariable("estacionamentoId") String id){
         TicketDTO ticket = ticketService.generateTicket(id);
