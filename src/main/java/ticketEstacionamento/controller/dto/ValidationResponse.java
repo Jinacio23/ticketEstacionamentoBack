@@ -1,4 +1,4 @@
-package ticketEstacionamento.dto;
+package ticketEstacionamento.controller.dto;
 
 import ticketEstacionamento.entity.Ticket;
 

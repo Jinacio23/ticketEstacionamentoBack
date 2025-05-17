@@ -1,4 +1,4 @@
-package ticketEstacionamento.dto;
+package ticketEstacionamento.controller.dto;
 
 public class QrValidationRequest {
     private Long ticketId;

@@ -2,7 +2,7 @@ package ticketEstacionamento.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ticketEstacionamento.dto.EstacionamentoDTO;
+import ticketEstacionamento.controller.dto.EstacionamentoDTO;
 import ticketEstacionamento.entity.Estacionamento;
 import ticketEstacionamento.repository.EstacionamentoRepository;
 
