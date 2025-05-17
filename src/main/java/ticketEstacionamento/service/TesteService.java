@@ -1,7 +1,7 @@
 package ticketEstacionamento.service;
 
 import org.springframework.stereotype.Service;
-import ticketEstacionamento.dto.TesteDTO;
+import ticketEstacionamento.controller.dto.TesteDTO;
 import ticketEstacionamento.entity.Teste;
 import ticketEstacionamento.repository.TesteRepository;
 

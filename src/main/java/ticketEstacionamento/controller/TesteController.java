@@ -2,7 +2,7 @@ package ticketEstacionamento.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ticketEstacionamento.dto.TesteDTO;
+import ticketEstacionamento.controller.dto.TesteDTO;
 import ticketEstacionamento.entity.Teste;
 import ticketEstacionamento.service.TesteService;
 

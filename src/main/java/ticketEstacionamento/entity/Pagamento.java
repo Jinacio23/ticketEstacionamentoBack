@@ -23,9 +23,6 @@ public class Pagamento {
     @Column(name = "tipo_pagamento")
     private String tipoPagamento; //pix, dinheiro, cartao
 
-//    @Column(name = "status")
-//    private String status; //pago, pendente, cancelado
-
     @OneToOne
     @JoinColumn(name = "ticket_id")
     @JsonBackReference
