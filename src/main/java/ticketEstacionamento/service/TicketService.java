@@ -2,7 +2,7 @@ package ticketEstacionamento.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ticketEstacionamento.dto.TicketDTO;
+import ticketEstacionamento.controller.dto.TicketDTO;
 import ticketEstacionamento.entity.Estacionamento;
 import ticketEstacionamento.entity.Pagamento;
 import ticketEstacionamento.entity.Ticket;
@@ -13,10 +13,8 @@ import ticketEstacionamento.repository.TicketRepository;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Duration;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service

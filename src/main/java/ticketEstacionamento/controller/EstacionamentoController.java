@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ticketEstacionamento.dto.EstacionamentoDTO;
+import ticketEstacionamento.controller.dto.EstacionamentoDTO;
 import ticketEstacionamento.entity.Estacionamento;
 import ticketEstacionamento.service.EstacionamentoService;
 
@@ -27,9 +27,9 @@ public class EstacionamentoController {
         return ResponseEntity.ok(estacionamentos);
     }
 
-    //Pesquisando um estacionamento pelo id
+    //Estacionamento por id
     @GetMapping("/{id}")
-    public ResponseEntity<Estacionamento> conseguindoEstacionamento(@PathVariable("id") String id) {
+    public ResponseEntity<Estacionamento> estacionamentoPorId(@PathVariable("id") String id) {
 
         Optional<Estacionamento> estacionamento = estacionamentoService.estacionamentoPeloId(id);
 

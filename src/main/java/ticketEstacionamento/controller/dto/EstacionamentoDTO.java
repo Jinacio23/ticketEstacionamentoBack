@@ -1,4 +1,4 @@
-package ticketEstacionamento.dto;
+package ticketEstacionamento.controller.dto;
 
 public class EstacionamentoDTO {
     private String nome;
