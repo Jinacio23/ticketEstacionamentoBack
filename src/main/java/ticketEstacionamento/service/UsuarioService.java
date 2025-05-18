@@ -9,6 +9,7 @@ import ticketEstacionamento.controller.dto.UsuarioDTO;
 import ticketEstacionamento.entity.Estacionamento;
 import ticketEstacionamento.entity.Role;
 import ticketEstacionamento.entity.Usuario;
+import ticketEstacionamento.repository.EstacionamentoRepository;
 import ticketEstacionamento.repository.RoleRepository;
 import ticketEstacionamento.repository.UsuarioRepository;
 
@@ -24,6 +25,9 @@ public class UsuarioService {
     private UsuarioRepository usuarioRepository;
 
     @Autowired
+    private EstacionamentoRepository estacionamentoRepository;
+
+    @Autowired
     private RoleRepository roleRepository;
 
     @Autowired
@@ -33,6 +37,8 @@ public class UsuarioService {
         Role managerRole = roleRepository.findByNome(Role.Values.MANAGER.name());
 
         Optional<Usuario> usuarioDB = usuarioRepository.findByNome(usuariodDTO.nome());
+        Optional<Estacionamento> estacionamento = Optional.ofNullable(estacionamentoRepository.findById(usuariodDTO.estacionamentoId())
+                .orElseThrow(() -> new RuntimeException("Estacionamento não encontrado!")));
 
         if (usuarioDB.isPresent()) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
@@ -42,6 +48,7 @@ public class UsuarioService {
         usuario.setNome(usuariodDTO.nome());
         usuario.setSenha(passwordEncoder.encode(usuariodDTO.senha()));
         usuario.setRoles(Set.of(managerRole));
+        usuario.setEstacionamento(estacionamento.get());
 
         usuarioRepository.save(usuario);
     }
