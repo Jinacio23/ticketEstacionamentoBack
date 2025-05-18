@@ -1,10 +1,13 @@
 package ticketEstacionamento.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import ticketEstacionamento.controller.dto.EstacionamentoDTO;
 import ticketEstacionamento.entity.Estacionamento;
+import ticketEstacionamento.entity.Usuario;
 import ticketEstacionamento.repository.EstacionamentoRepository;
+import ticketEstacionamento.repository.UsuarioRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,8 +18,22 @@ public class EstacionamentoService {
     @Autowired
     private EstacionamentoRepository estacionamentoRepository;
 
-    public List<Estacionamento> listandoFiliais() {
-        return estacionamentoRepository.findAll();
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    public List<Estacionamento> listandoFiliais(String username) {
+        Optional<Usuario> usuario = Optional.ofNullable(usuarioRepository.findByNome(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado!")));
+
+        boolean isAdmin = usuario.get().getRoles()
+                .stream()
+                .anyMatch(role -> role.getNome().equalsIgnoreCase("ADMIN"));
+
+        if (isAdmin){
+            return estacionamentoRepository.findAll();
+        } else {
+            return List.of(usuario.get().getEstacionamento());
+        }
     }
 
     public Optional<Estacionamento> estacionamentoPeloId(String id) {

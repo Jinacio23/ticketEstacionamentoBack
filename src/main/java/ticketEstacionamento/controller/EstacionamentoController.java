@@ -3,6 +3,10 @@ package ticketEstacionamento.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 import ticketEstacionamento.controller.dto.EstacionamentoDTO;
 import ticketEstacionamento.entity.Estacionamento;
@@ -20,10 +24,18 @@ public class EstacionamentoController {
     private EstacionamentoService estacionamentoService;
 
     //Listagem dos estacionamentos
+    //Se usuario ADMIN, retorna todos os registros, senão apenas o vinculado
     @GetMapping
-    public ResponseEntity<List<Estacionamento>> listagemDeEstacionamentos(){
-        List<Estacionamento> estacionamentos = estacionamentoService.listandoFiliais();
+    public ResponseEntity<List<Estacionamento>> listagemDeEstacionamentosPorRole(){
+        String username = "";
+        //Conseguir usuario logado
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication instanceof JwtAuthenticationToken jwtAuth) {
+            var token = jwtAuth.getToken();
+            username = token.getClaimAsString("username");
+        }
 
+        List<Estacionamento> estacionamentos = estacionamentoService.listandoFiliais(username);
         return ResponseEntity.ok(estacionamentos);
     }
 

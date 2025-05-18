@@ -56,6 +56,7 @@ public class TokenController {
                 .issuedAt(now)
                 .expiresAt(now.plusSeconds(expireJWTAccess))
                 .claim("scope", scopes)
+                .claim("username", usuario.get().getNome())
                 .build();
         var jwtAccessToken = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
 
@@ -67,6 +68,7 @@ public class TokenController {
                 .expiresAt(now.plusSeconds(expireJWTRefresh))
                 .claim("type", "refresh_token")
                 .claim("scope", scopes)
+                .claim("username", usuario.get().getNome())
                 .build();
 
         String jwtRefreshToken = jwtEncoder.encode(JwtEncoderParameters.from(refreshTokenClaims)).getTokenValue();
@@ -84,6 +86,10 @@ public class TokenController {
         if (!"refresh_token".equals(decoded.getClaimAsString("type"))) {
             return ResponseEntity.status(403).build(); // Forbidden
         }
+        String username = decoded.getClaimAsString("username");
+        if (username == ""){
+            return ResponseEntity.status(403).build(); // Forbidden
+        }
 
         // Gera novo access token
         Instant now = Instant.now();
@@ -95,6 +101,7 @@ public class TokenController {
                 .issuedAt(now)
                 .expiresAt(now.plusSeconds(accessTokenValidity))
                 .claim("scope", decoded.getClaimAsString("scope"))
+                .claim("username", username)
                 .build();
 
         String newAccessToken = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();

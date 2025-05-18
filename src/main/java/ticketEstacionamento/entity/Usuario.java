@@ -1,5 +1,6 @@
 package ticketEstacionamento.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import ticketEstacionamento.controller.dto.LoginRequest;
@@ -20,6 +21,11 @@ public class Usuario {
     private String nome;
 
     private String senha;
+
+    @ManyToOne
+    @JsonBackReference
+    @JoinColumn(name = "estacionamento_id")
+    private Estacionamento estacionamento;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -51,6 +57,14 @@ public class Usuario {
 
     public void setSenha(String senha) {
         this.senha = senha;
+    }
+
+    public Estacionamento getEstacionamento() {
+        return estacionamento;
+    }
+
+    public void setEstacionamento(Estacionamento estacionamento) {
+        this.estacionamento = estacionamento;
     }
 
     public Set<Role> getRoles() {

@@ -42,12 +42,12 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests(authorize -> authorize
-//                        .requestMatchers(HttpMethod.POST, "/usuarios").permitAll()
-//                        .requestMatchers(HttpMethod.GET, "/usuarios").permitAll()
-//                        .requestMatchers(HttpMethod.POST, "/login").permitAll()
+//                        .requestMatchers(HttpMethod.POST, "api/login").permitAll()
+//                        .requestMatchers(HttpMethod.POST, "api/refresh").permitAll()
                         .anyRequest().permitAll())
                 .csrf(csrf -> csrf.disable())
-                .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(Customizer.withDefaults()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();

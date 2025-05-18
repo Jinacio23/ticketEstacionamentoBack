@@ -1,5 +1,6 @@
 package ticketEstacionamento.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.time.LocalTime;
@@ -30,6 +31,10 @@ public class Estacionamento {
 
     @OneToMany(mappedBy = "estacionamento")
     private List<Ticket> tickets;
+
+    @OneToMany(mappedBy = "estacionamento")
+    @JsonManagedReference
+    private List<Usuario> usuarios;
 
     public Estacionamento() {
     }
@@ -91,5 +96,19 @@ public class Estacionamento {
         this.status = status;
     }
 
+    public List<Ticket> getTickets() {
+        return tickets;
+    }
 
+    public void setTickets(List<Ticket> tickets) {
+        this.tickets = tickets;
+    }
+
+    public List<Usuario> getUsuarios() {
+        return usuarios;
+    }
+
+    public void setUsuarios(List<Usuario> usuarios) {
+        this.usuarios = usuarios;
+    }
 }
