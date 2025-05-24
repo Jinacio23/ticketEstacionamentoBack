@@ -34,13 +34,15 @@ public class AdminUserConfig implements CommandLineRunner {
         Optional<Usuario> usuarioAdmin = usuarioRepository.findByNome("admin");
 
         if (usuarioAdmin.isPresent()) {
-            System.out.println("Admin já existe");
+            System.out.println("Iniciado com sucesso!");
         } else {
             Usuario usuario = new Usuario();
             usuario.setNome("admin");
-            usuario.setSenha(passwordEncoder.encode("123"));
+            usuario.setSenha(passwordEncoder.encode("12345"));
             usuario.setRoles(Set.of(roleAdmin));
             usuarioRepository.save(usuario);
+            System.out.println("Iniciado com sucesso!");
+            System.out.println("Admin criado com sucesso\n username: admin \n senha:12345");
         }
     }
 }

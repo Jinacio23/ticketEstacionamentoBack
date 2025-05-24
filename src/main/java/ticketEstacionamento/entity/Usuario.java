@@ -2,15 +2,19 @@ package ticketEstacionamento.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import ticketEstacionamento.controller.dto.LoginRequest;
 
+import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
 
 @Entity
 @Table(name = "tb_usuarios")
-public class Usuario {
+public class Usuario implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -37,10 +41,6 @@ public class Usuario {
 
     public UUID getUsuarioId() {
         return usuarioId;
-    }
-
-    public void setUsuarioId(UUID usuarioId) {
-        this.usuarioId = usuarioId;
     }
 
     public String getNome() {
@@ -78,4 +78,34 @@ public class Usuario {
     public boolean loginCorreto(LoginRequest loginRequest, PasswordEncoder passwordEncoder) {
         return passwordEncoder.matches(loginRequest.senha(), this.senha);
     }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return roles.stream()
+                .map(role -> new SimpleGrantedAuthority(role.getNome()))
+                .toList();
+    }
+
+    @Override
+    public String getPassword() {
+        return this.senha;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.nome;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() { return true; }
+
+    @Override
+    public boolean isAccountNonLocked() { return true; }
+
+    @Override
+    public boolean isCredentialsNonExpired() { return true; }
+
+    @Override
+    public boolean isEnabled() { return true; }
 }
+
