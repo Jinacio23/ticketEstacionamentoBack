@@ -8,6 +8,7 @@ import org.springframework.security.oauth2.jwt.*;
 import org.springframework.web.bind.annotation.*;
 import ticketEstacionamento.controller.dto.LoginRequest;
 import ticketEstacionamento.controller.dto.LoginResponse;
+import ticketEstacionamento.controller.dto.UserResponse;
 import ticketEstacionamento.entity.Role;
 import ticketEstacionamento.entity.Usuario;
 import ticketEstacionamento.repository.UsuarioRepository;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin(origins = "http://localhost:5173")
 public class TokenController {
 
     @Autowired
@@ -32,10 +34,27 @@ public class TokenController {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
+    //Recupera usuario autenticado
+    @GetMapping("/me")
+    public ResponseEntity<UserResponse> getCurrentUser(@RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.replace("Bearer ", "");
+        Jwt decoded = jwtDecoder.decode(token);
+
+        String username = decoded.getClaimAsString("username");
+        String userId = decoded.getClaimAsString("userId");
+        String roles = decoded.getClaimAsString("scope");
+
+        if(username == "" || userId == "" || roles == ""){
+            return ResponseEntity.status(403).build(); // Forbidden
+        }
+
+        return ResponseEntity.ok(new UserResponse(userId, username, roles));
+    }
+
+
     //Executa o login, e retorna token de acesso e de refresh
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest){
-
         Optional<Usuario> usuario = usuarioRepository.findByNome(loginRequest.nome());
         if(usuario.isEmpty() || !usuario.get().loginCorreto(loginRequest, passwordEncoder)){
             throw new BadCredentialsException("Usuário ou senha inválido!");
@@ -44,7 +63,7 @@ public class TokenController {
         long expireJWTAccess = 300L;//5 min
         long expireJWTRefresh = 86400L;//1 dia
 
-        var scopes = usuario.get().getRoles()
+        String scopes = usuario.get().getRoles()
                 .stream()
                 .map(Role::getNome)
                 .collect(Collectors.joining(" "));
@@ -52,10 +71,11 @@ public class TokenController {
         //JWT de acesso
         var claims = JwtClaimsSet.builder()
                 .issuer("backend")
-                .subject(usuario.get().getUsuarioId().toString())
+                .subject(usuario.get().getNome())
                 .issuedAt(now)
                 .expiresAt(now.plusSeconds(expireJWTAccess))
                 .claim("scope", scopes)
+                .claim("userId", usuario.get().getUsuarioId())
                 .claim("username", usuario.get().getNome())
                 .build();
         var jwtAccessToken = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
@@ -68,6 +88,7 @@ public class TokenController {
                 .expiresAt(now.plusSeconds(expireJWTRefresh))
                 .claim("type", "refresh_token")
                 .claim("scope", scopes)
+                .claim("userId", usuario.get().getUsuarioId())
                 .claim("username", usuario.get().getNome())
                 .build();
 
@@ -90,6 +111,10 @@ public class TokenController {
         if (username == ""){
             return ResponseEntity.status(403).build(); // Forbidden
         }
+        String userId = decoded.getClaimAsString("userId");
+        if(userId == ""){
+            return ResponseEntity.status(403).build(); // Forbidden
+        }
 
         // Gera novo access token
         Instant now = Instant.now();
@@ -101,6 +126,7 @@ public class TokenController {
                 .issuedAt(now)
                 .expiresAt(now.plusSeconds(accessTokenValidity))
                 .claim("scope", decoded.getClaimAsString("scope"))
+                .claim("userId", userId)
                 .claim("username", username)
                 .build();
 
@@ -108,6 +134,5 @@ public class TokenController {
 
         return ResponseEntity.ok(new LoginResponse(newAccessToken, token, accessTokenValidity));
     }
-
 
 }
