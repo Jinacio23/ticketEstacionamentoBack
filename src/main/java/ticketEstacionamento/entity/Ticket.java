@@ -1,5 +1,6 @@
 package ticketEstacionamento.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -33,6 +34,7 @@ public class Ticket {
 
     @ManyToOne
     @JoinColumn(name = "estacionamento_id")
+    @JsonBackReference
     private Estacionamento estacionamento;
 
     @OneToOne(mappedBy = "ticket", cascade = CascadeType.ALL)

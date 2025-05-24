@@ -30,6 +30,7 @@ public class Estacionamento {
     private Boolean status;
 
     @OneToMany(mappedBy = "estacionamento")
+    @JsonManagedReference
     private List<Ticket> tickets;
 
     @OneToMany(mappedBy = "estacionamento")
