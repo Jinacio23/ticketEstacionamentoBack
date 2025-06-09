@@ -1,5 +1,6 @@
 package ticketEstacionamento.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
@@ -30,7 +31,8 @@ public class Estacionamento {
     private Boolean status;
 
     @OneToMany(mappedBy = "estacionamento")
-    @JsonManagedReference
+//    @JsonManagedReference(value = "estacionamento-tickets")
+    @JsonIgnoreProperties("estacionamento")
     private List<Ticket> tickets;
 
     @OneToMany(mappedBy = "estacionamento")

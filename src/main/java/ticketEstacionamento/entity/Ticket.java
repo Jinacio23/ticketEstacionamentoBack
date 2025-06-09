@@ -1,6 +1,7 @@
 package ticketEstacionamento.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -29,12 +30,16 @@ public class Ticket {
     @Column(name = "qr_code_expiration")
     private LocalDateTime qrCodeExpiration;
 
+    @Column(name = "qr_code_base64", length = 500)
+    private String qrCodeBase64;
+
     private LocalDateTime hrEntrada;
     private LocalDateTime hrSaida;
 
     @ManyToOne
     @JoinColumn(name = "estacionamento_id")
-    @JsonBackReference
+//    @JsonBackReference(value = "estacionamento-tickets")
+    @JsonIgnoreProperties("tickets")
     private Estacionamento estacionamento;
 
     @OneToOne(mappedBy = "ticket", cascade = CascadeType.ALL)
@@ -44,12 +49,13 @@ public class Ticket {
     public Ticket(){
     }
 
-    public Ticket(Long idTicket, Boolean pago, double valor, String qrCodeToken, LocalDateTime qrCodeExpiration, LocalDateTime hrEntrada, LocalDateTime hrSaida) {
+    public Ticket(Long idTicket, Boolean pago, double valor, String qrCodeToken, LocalDateTime qrCodeExpiration, String qrCodeBase64, LocalDateTime hrEntrada, LocalDateTime hrSaida) {
         this.idTicket = idTicket;
         this.pago = pago;
         this.valor = valor;
         this.qrCodeToken = qrCodeToken;
         this.qrCodeExpiration = qrCodeExpiration;
+        this.qrCodeBase64 = qrCodeBase64;
         this.hrEntrada = hrEntrada;
         this.hrSaida = hrSaida;
     }
@@ -92,6 +98,14 @@ public class Ticket {
 
     public void setQrCodeExpiration(LocalDateTime qrCodeExpiration) {
         this.qrCodeExpiration = qrCodeExpiration;
+    }
+
+    public String getQrCodeBase64() {
+        return qrCodeBase64;
+    }
+
+    public void setQrCodeBase64(String qrCodeBase64) {
+        this.qrCodeBase64 = qrCodeBase64;
     }
 
     public LocalDateTime getHrEntrada() {

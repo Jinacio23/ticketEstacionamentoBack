@@ -13,6 +13,8 @@ import ticketEstacionamento.repository.TicketRepository;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -67,34 +69,41 @@ public class TicketService {
         Estacionamento estacionamento = estacionamentoRepository.findById(estacionamentoId)
                 .orElseThrow(() -> new RuntimeException("Estacionamento não encontrado"));
 
-        //Gerando token para o ticket
+        // token para o ticket
         String token = UUID.randomUUID().toString();
 
-        //Definindo valor padrão
-        double ticketValue = 0.0;
+        //Horário de entrada e expiração do ticket
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime expiration = now.plusMinutes(15);
 
         try{
             //Criando novo ticket e salvando no banco
             Ticket newTicket = new Ticket();
 
             newTicket.setQrCodeToken(token);
-            newTicket.setHrEntrada(LocalDateTime.now());
-            newTicket.setQrCodeExpiration(LocalDateTime.now().plusMinutes(15));
-            newTicket.setValor(ticketValue);
+            newTicket.setHrEntrada(now);
+            newTicket.setQrCodeExpiration(expiration);
+            newTicket.setValor(0.0);
             newTicket.setEstacionamento(estacionamento);
             newTicket.setPago(false);
 
-            ticketRepository.save(newTicket);
+            // Salva o ticket primeiro para garantir que o ID seja gerado
+            newTicket = ticketRepository.save(newTicket);
 
-            // Cria o conteúdo do QR Code
-            String qrContent = String.format("ticket:%s,token:%s", newTicket.getIdTicket(), newTicket.getQrCodeToken());
-            String qrCode = qrCodeService.generateQRCodeBase64(qrContent, 200,200);
+            // Gera o conteúdo e o QR Code com o ID do ticket
+            String qrContent = String.format("ticket:%s,token:%s", newTicket.getIdTicket(), token);
+            String qrCodeBase64 = qrCodeService.generateQRCodeBase64(qrContent, 100, 100);
 
-            // Criando DTO de retorno para o front
+            newTicket.setQrCodeBase64(qrCodeBase64);
+
+            System.out.println("Base64 lenght - "+ newTicket.getQrCodeBase64().length());
+
+            ticketRepository.save(newTicket); // Atualiza com o QR code
+
             return new TicketDTO(
                     newTicket.getQrCodeToken(),
                     newTicket.getHrEntrada(),
-                    qrCode,
+                    newTicket.getQrCodeBase64(),
                     newTicket.getEstacionamento()
             );
 
@@ -105,24 +114,6 @@ public class TicketService {
         }
 
     }
-
-    //Validação e baixa do ticket
-//    public void baixaTicket(String id){
-//        Long idTicket = Long.parseLong(id);
-//
-//        Optional<Ticket> ticketEntity = ticketRepository.findById(idTicket);
-//
-//        if(ticketEntity.isPresent()){
-//            Ticket ticket = ticketEntity.get();
-//
-//            ticket.setStatus(false);
-//            ticket.setBaixaTicket(Instant.now());
-//
-//            ticketRepository.save(ticket);
-//        } else {
-//            throw new RuntimeException("Ticket não encontrado!");
-//        }
-//    }
 
     //Validação do qrcode
     public Ticket validateQrCode(String token) {
